@@ -1,0 +1,24 @@
+{
+  "name": "image-scraper",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Shovon Hasan <im.shovonhasan@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "ts-node ./index.ts",
+    "download": "ts-node ./index.ts"
+  },
+  "devDependencies": {
+    "@types/cheerio": "^0.22.7",
+    "@types/fs-extra": "^5.0.0",
+    "@types/node": "^9.3.0",
+    "ts-node": "^4.1.0",
+    "tslint": "^5.8.0",
+    "typescript": "^2.6.2"
+  },
+  "dependencies": {
+    "axios": "^0.17.1",
+    "cheerio": "^1.0.0-rc.2",
+    "fs-extra": "^5.0.0"
+  }
+}
