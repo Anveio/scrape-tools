@@ -1,8 +1,13 @@
-import { getFileUrls, getUrlData, fileSrcToChanData } from '../utils/chan';
+import {
+  getUrlData,
+  fileSrcToChanData,
+  getChanThreadFileUrls
+} from '../utils/chan';
 import {
   createFolderForThread,
   downloadFilesInParallel,
-  requestUrl
+  requestUrl,
+  downloadChanFile
 } from '../utils/requests';
 
 export class ChanScraper {
@@ -16,15 +21,17 @@ export class ChanScraper {
     try {
       const { data } = await requestUrl<string>(url);
 
-      const fileUrls = getFileUrls(data).filter(
+      const fileUrls = getChanThreadFileUrls(data).filter(
         ChanScraper.keepWhitelistedFiles
       );
       const filesToDownload = fileUrls.map(fileSrcToChanData(threadData));
 
-      console.log(`Downloading ${filesToDownload.length} files.`);
+      console.info(`Downloading ${filesToDownload.length} files.`);
 
       await createFolderForThread(threadData);
-      await downloadFilesInParallel(filesToDownload);
+      await downloadFilesInParallel<ChanFileData>(filesToDownload)(
+        downloadChanFile
+      );
     } catch (e) {
       console.error(e);
     }

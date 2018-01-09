@@ -1,12 +1,17 @@
 import * as path from 'path';
-import { load } from 'cheerio';
+
 import { BASE_PICTURE_DIRECTORY } from '../constants';
+import {
+  loadHtmlString,
+  prependSecureSchemeToUrl,
+  getHrefAttribute,
+  filterInvalidString
+} from './cheerio';
+import { extractFileNameFromUrl } from './urls';
 
-export const getFileUrls = (html: string) =>
-  selectImageHrefs(loadHtmlString(html)).map(prependSecureSchemeToUrl);
-
-export const generateFileDestination = (info: ChanFileDestination): string =>
-  path.join(generateFolderForThread(info), info.filename);
+export const generateChanFileDestination = (
+  info: ChanFileDestination
+): string => path.join(generateFolderForThread(info), info.filename);
 
 export const generateFolderForThread = (info: ChanThreadMetaData): string =>
   path.join(BASE_PICTURE_DIRECTORY, '4chan', info.board, info.thread);
@@ -30,28 +35,12 @@ export const fileSrcToChanData = (threadData: ChanThreadMetaData) => (
   }
 });
 
-const prependSecureSchemeToUrl = (url: string) => {
-  if (url.startsWith('http')) {
-    return url;
-  } else if (url.startsWith('//')) {
-    return 'https:' + url;
-  } else {
-    return 'https://' + url;
-  }
-};
+export const getChanThreadFileUrls = (html: string) =>
+  selectChanThreadImageHrefs(loadHtmlString(html)).map(
+    prependSecureSchemeToUrl
+  );
 
-const loadHtmlString = (html: string) => load(html);
-
-const selectImageHrefs = (input: CheerioStatic): string[] =>
+const selectChanThreadImageHrefs = (input: CheerioStatic): string[] =>
   Array.from(input('a.fileThumb'))
     .map(getHrefAttribute)
-    .filter(filterInvalidHrefs);
-
-const getHrefAttribute = (el: CheerioElement) => el.attribs.href;
-
-const filterInvalidHrefs = (href: string) => href !== undefined;
-
-const extractFileNameFromUrl = (url: string): string => {
-  const splitUrl = url.split('/');
-  return splitUrl[splitUrl.length - 1];
-};
+    .filter(filterInvalidString);
