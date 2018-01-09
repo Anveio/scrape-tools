@@ -14,6 +14,6 @@ export const loadHtmlString = (html: string) => load(html);
 
 export const getHrefAttribute = (el: CheerioElement) => el.attribs.href;
 
-export const getSrcAttribute  = (el: CheerioElement) => el.attribs.src;
+export const getSrcAttribute = (el: CheerioElement) => el.attribs.src;
 
 export const filterInvalidString = (str: string) => str !== undefined;

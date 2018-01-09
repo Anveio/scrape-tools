@@ -8,7 +8,6 @@ import {
 import {
   extractAlbumUrls,
   createFolderForImgurSubreddit,
-  extractSubredditName,
   transformImgurApiResponse
 } from '../utils/imgur';
 import { prependSecureSchemeToUrl } from '../utils/cheerio';
@@ -16,19 +15,25 @@ import { formatImgurUrl } from '../utils/urls';
 
 export class ImgurScraper {
   public static downloadSubredditView = async (url: string) => {
-    const subreddit = extractSubredditName(url);
     try {
       const response = await requestUrl<ImgurApiResponse>(formatImgurUrl(url), {
         responseType: 'json'
       });
 
+      console.log(formatImgurUrl(url));
+
       const filesToDownload = response.data.data
         .map(transformImgurApiResponse)
         .filter(file => file.size > 0);
 
+      if (filesToDownload.length === 0) {
+        console.info('Found no images to download.');
+        return;
+      }
+
       console.info(`Downloading ${filesToDownload.length} images.`);
 
-      await createFolderForImgurSubreddit(subreddit);
+      await createFolderForImgurSubreddit(filesToDownload[0].subreddit);
       await downloadFilesInParallel(filesToDownload)(downloadImgurFile);
     } catch (e) {
       console.error(e);

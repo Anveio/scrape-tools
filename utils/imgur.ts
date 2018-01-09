@@ -20,34 +20,36 @@ export const extractAlbumUrls = (data: string): string[] => {
     .map(prependImgurHostname);
 };
 
-export const extractSubredditName = (url: string): string => {
-  const regexpArray = /r\/(.*)/.exec(url);
-  if (regexpArray && regexpArray[1]) {
-    return regexpArray[1];
-  } else {
-    throw new Error('Problem parsing imgur subreddit name.');
-  }
-};
-
 const generateImgurSubredditFolder = (subreddit: string) =>
   path.join(BASE_PICTURE_DIRECTORY, 'imgur', subreddit);
 
 export const generateImgurSubredditDestination = (file: ImgurFileData) =>
   path.join(generateImgurSubredditFolder(file.subreddit), file.filename);
 
-export const createFolderForImgurSubreddit = async (subreddit: string) =>
+export const createFolderForImgurSubreddit = async (subreddit: string) => {
   await fs.mkdirp(generateImgurSubredditFolder(subreddit));
+};
 
 export const transformImgurApiResponse = (
   data: ImgurImageData
-): ImgurFileData => ({
-  ext: data.ext,
-  filename: `${data.hash}${data.ext}`,
-  hash: data.hash,
-  src: `https://i.imgur.com/${data.hash}${data.ext}`,
-  subreddit: data.subreddit,
-  size: data.size
-});
+): ImgurFileData => {
+  const ext = normalizeExtension(data.ext);
+  return {
+    ext,
+    filename: `${data.hash}${ext}`,
+    hash: data.hash,
+    src: `https://i.imgur.com/${data.hash}${ext}`,
+    subreddit: data.subreddit,
+    size: data.size
+  };
+};
+
+const normalizeExtension = (ext: string) => {
+  /**
+   * Sometimes extensions have wierd question mark symbols at the end.
+   */
+  return ext.replace(/(\?.*)/, '');
+};
 
 const prependImgurHostname = (relativeUrl: string) =>
   `https://imgur.com` + relativeUrl;
