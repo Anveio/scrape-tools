@@ -1,15 +1,6 @@
-import axios from 'axios';
 import * as path from 'path';
 import { load } from 'cheerio';
-import { BASE_PICTURE_DIRECTORY } from './constants';
-
-export const requestUrl = async <T>(url: string) => {
-  try {
-    return await axios.get<T>(url);
-  } catch (e) {
-    throw new Error(`Network Error: failed to fetch thread: ${url}`);
-  }
-};
+import { BASE_PICTURE_DIRECTORY } from '../constants';
 
 export const getFileUrls = (html: string) =>
   selectImageHrefs(loadHtmlString(html)).map(prependSecureSchemeToUrl);

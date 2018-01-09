@@ -1,12 +1,8 @@
-import {
-  requestUrl,
-  getFileUrls,
-  getUrlData,
-  fileSrcToChanData
-} from './utils';
+import { getFileUrls, getUrlData, fileSrcToChanData } from './utils/chan';
 import {
   createFolderForThread,
-  downloadFilesInParallel
+  downloadFilesInParallel,
+  requestUrl
 } from './utils/requests';
 
 export class ChanScraper {
