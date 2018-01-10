@@ -1,16 +1,12 @@
 import {
   requestUrl,
   downloadFilesInParallel,
-  downloadImgurFile,
-  requestUrlsInParallel,
-  selectData
+  downloadImgurFile
 } from '../utils/requests';
 import {
-  extractAlbumUrls,
   createFolderForImgurSubreddit,
   transformImgurApiResponse
 } from '../utils/imgur';
-import { prependSecureSchemeToUrl } from '../utils/cheerio';
 import { formatImgurUrl } from '../utils/urls';
 
 export class ImgurScraper {
@@ -19,8 +15,6 @@ export class ImgurScraper {
       const response = await requestUrl<ImgurApiResponse>(formatImgurUrl(url), {
         responseType: 'json'
       });
-
-      console.log(formatImgurUrl(url));
 
       const filesToDownload = response.data.data
         .map(transformImgurApiResponse)

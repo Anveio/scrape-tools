@@ -2,7 +2,6 @@ import * as path from 'path';
 
 import { BASE_PICTURE_DIRECTORY } from '../constants';
 import {
-  loadHtmlString,
   prependSecureSchemeToUrl,
   getHrefAttribute,
   filterInvalidString
@@ -13,14 +12,18 @@ export const generateChanFileDestination = (
   info: ChanFileDestination
 ): string => path.join(generateFolderForThread(info), info.filename);
 
-export const generateFolderForThread = (info: ChanThreadMetaData): string =>
-  path.join(BASE_PICTURE_DIRECTORY, '4chan', info.board, info.thread);
+export const generateFolderForThread = (info: ChanThreadMetaData): string => {
+  return path.join(BASE_PICTURE_DIRECTORY, '4chan', info.board, info.thread);
+};
 
-export const getUrlData = (url: string): ChanThreadMetaData => {
-  const x = url.split('/');
+export const getThreadData = ($: CheerioStatic): ChanThreadMetaData => {
+  var titleData = $('title').text();
+
+  const href = $('link[rel=canonical]').attr('href');
+
   return {
-    board: x[3],
-    thread: x[6]
+    board: formatBoardName(titleData),
+    thread: hrefToThreadTitle(href)
   };
 };
 
@@ -35,12 +38,18 @@ export const fileSrcToChanData = (threadData: ChanThreadMetaData) => (
   }
 });
 
-export const getChanThreadFileUrls = (html: string) =>
-  selectChanThreadImageHrefs(loadHtmlString(html)).map(
-    prependSecureSchemeToUrl
-  );
+export const getChanThreadFileUrls = ($: CheerioStatic) =>
+  selectChanThreadImageHrefs($).map(prependSecureSchemeToUrl);
 
 const selectChanThreadImageHrefs = (input: CheerioStatic): string[] =>
   Array.from(input('a.fileThumb'))
     .map(getHrefAttribute)
     .filter(filterInvalidString);
+
+export const formatChanUrl = (url: string) => url.replace(/(#.*)/g, '');
+
+const formatBoardName = (unformattedBoardName: string): string =>
+  unformattedBoardName.split(' - ')[0].replace(/\//g, '');
+
+const hrefToThreadTitle = (href: string): string =>
+  href.split('/').slice(-1)[0];

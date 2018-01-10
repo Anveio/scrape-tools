@@ -11,7 +11,7 @@ export const requestUrl = async <T>(
   try {
     return await axios.get<T>(url, config);
   } catch (e) {
-    console.log(e);
+    console.warn(e);
     throw new Error(`Network Error: failed to fetch url: ${url}`);
   }
 };
