@@ -4,7 +4,8 @@ import {
   getChanThreadFileUrls,
   formatChanUrl,
   generateFolderForThread,
-  generateChanFileDestination
+  generateChanFileDestination,
+  filterFiles
 } from '../utils/chan';
 import {
   createFolder,
@@ -16,11 +17,6 @@ import { loadHtmlString } from '../utils/cheerio';
 import { logger } from '../utils/logger';
 
 export class ChanScraper {
-  private static MIME_TYPE_WHITELIST = /webm/;
-
-  private static keepWhitelistedFiles = (file: ChanFile) =>
-    ChanScraper.MIME_TYPE_WHITELIST.test(file.src);
-
   public static downloadThread = async (url: string) => {
     logger.reportUrlToDownload(url);
     try {
@@ -31,9 +27,12 @@ export class ChanScraper {
       const unfilteredFiles = getChanThreadFileUrls(parsedHtmlString);
       logger.reportTotalFiles(unfilteredFiles.length);
 
-      const filesToDownload = unfilteredFiles
-        .map(fileInThreadToChanData(threadData))
-        .filter(ChanScraper.keepWhitelistedFiles);
+      const filesToDownload = filterFiles(unfilteredFiles)(threadData);
+      if (filesToDownload.length === 0) {
+        logger.reportNoFilesToDownload();
+        return;
+      }
+
       logger.reportNumFilesToDownload(filesToDownload.length);
 
       await createFolder(

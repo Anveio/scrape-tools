@@ -3,5 +3,6 @@ export const logger = {
   reportTotalFiles: (numFiles: number) =>
     console.info(`Found ${numFiles} files total.`),
   reportNumFilesToDownload: (numFiles: number) =>
-    console.info(`Downloading ${numFiles} files.`)
+    console.info(`Downloading ${numFiles} files.`),
+  reportNoFilesToDownload: () => console.log('Found no files to download.')
 };

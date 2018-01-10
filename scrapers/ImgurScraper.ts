@@ -9,6 +9,7 @@ import {
   generateImgurSubredditDestination
 } from '../utils/imgur';
 import { formatImgurUrl } from '../utils/urls';
+import { logger } from '../utils/logger';
 
 export class ImgurScraper {
   public static downloadSubredditView = async (url: string) => {
@@ -17,16 +18,18 @@ export class ImgurScraper {
         responseType: 'json'
       });
 
+      logger.reportTotalFiles(response.data.data.length);
+
       const filesToDownload = response.data.data
         .map(transformImgurApiResponse)
         .filter(file => file.size > 0);
 
       if (filesToDownload.length === 0) {
-        console.info('Found no images to download.');
+        logger.reportNoFilesToDownload();
         return;
       }
 
-      console.info(`Downloading ${filesToDownload.length} images.`);
+      logger.reportNumFilesToDownload(filesToDownload.length);
 
       await createFolderForImgurSubreddit(filesToDownload[0].subreddit);
       await downloadFilesInParallel(filesToDownload)(

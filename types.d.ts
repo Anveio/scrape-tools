@@ -2,12 +2,12 @@ interface DownloadableFile {
   readonly src: string;
 }
 
-interface ChanFile extends ChanThreadMetaData {
+interface ChanFile extends ChanThreadData {
   readonly src: string;
   readonly filename: string;
 }
 
-interface ChanThreadMetaData {
+interface ChanThreadData {
   readonly board: string;
   readonly thread: string;
 }

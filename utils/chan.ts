@@ -8,6 +8,8 @@ import {
 } from './cheerio';
 import { extractFileNameFromUrl } from './urls';
 
+const MIME_TYPE_WHITELIST = /webm/;
+
 export const generateChanFileDestination = (file: ChanFile): string =>
   path.join(generateFolderForThread(file.board, file.thread), file.filename);
 
@@ -18,7 +20,7 @@ export const generateFolderForThread = (
   return path.join(BASE_PICTURE_DIRECTORY, '4chan', board, thread);
 };
 
-export const getThreadData = ($: CheerioStatic): ChanThreadMetaData => {
+export const getThreadData = ($: CheerioStatic): ChanThreadData => {
   var titleData = $('title').text();
 
   const href = $('link[rel=canonical]').attr('href');
@@ -29,7 +31,7 @@ export const getThreadData = ($: CheerioStatic): ChanThreadMetaData => {
   };
 };
 
-export const fileInThreadToChanData = (threadData: ChanThreadMetaData) => (
+export const fileInThreadToChanData = (threadData: ChanThreadData) => (
   src: string
 ): ChanFile => ({
   src,
@@ -47,6 +49,16 @@ const selectChanThreadImageHrefs = (input: CheerioStatic): string[] =>
     .filter(filterInvalidString);
 
 export const formatChanUrl = (url: string) => url.replace(/(#.*)/g, '');
+
+export const filterFiles = (unfilteredFiles: string[]) => (
+  threadData: ChanThreadData
+) =>
+  unfilteredFiles
+    .map(fileInThreadToChanData(threadData))
+    .filter(keepWhitelistedFiles);
+
+const keepWhitelistedFiles = (file: ChanFile) =>
+  MIME_TYPE_WHITELIST.test(file.src);
 
 const formatBoardName = (unformattedBoardName: string): string =>
   unformattedBoardName.split(' - ')[0].replace(/\//g, '');
