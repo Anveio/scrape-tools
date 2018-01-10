@@ -1,6 +1,5 @@
 import {
   getThreadData,
-  fileInThreadToChanData,
   getChanThreadFileUrls,
   formatChanUrl,
   generateFolderForThread,
@@ -8,13 +7,13 @@ import {
   filterFiles
 } from '../utils/chan';
 import {
-  createFolder,
   downloadFilesInParallel,
   requestUrl,
   downloadFile
 } from '../utils/requests';
 import { loadHtmlString } from '../utils/cheerio';
 import { logger } from '../utils/logger';
+import { createFolder } from '../utils/fs';
 
 export class ChanScraper {
   public static downloadThread = async (url: string) => {

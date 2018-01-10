@@ -35,6 +35,4 @@ export const downloadFilesInParallel = <T>(files: T[]) => (
   downloadFn: (value: T) => void
 ) => Promise.all(files.map(downloadFn));
 
-export const createFolder = (destination: string) => fs.mkdirp(destination);
-
 export const selectData = <T>(response: AxiosResponse<T>) => response.data;

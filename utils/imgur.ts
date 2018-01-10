@@ -1,5 +1,4 @@
 import * as path from 'path';
-import * as fs from 'fs-extra';
 import {
   getHrefAttribute,
   filterInvalidString,
@@ -19,19 +18,13 @@ export const extractAlbumUrls = (data: string): string[] => {
     .map(prependImgurHostname);
 };
 
-const generateImgurSubredditFolder = (subreddit: string) =>
+export const generateImgurSubredditFolderPath = (subreddit: string) =>
   path.join(BASE_PICTURE_DIRECTORY, 'imgur', subreddit);
 
-export const generateImgurSubredditDestination = (file: ImgurFile) =>
-  path.join(generateImgurSubredditFolder(file.subreddit), file.filename);
+export const generateImgurSubredditFilePath = (file: ImgurFile) =>
+  path.join(generateImgurSubredditFolderPath(file.subreddit), file.filename);
 
-export const createFolderForImgurSubreddit = async (subreddit: string) => {
-  await fs.mkdirp(generateImgurSubredditFolder(subreddit));
-};
-
-export const transformImgurApiResponse = (
-  data: ImgurImageData
-): ImgurFile => {
+export const transformImgurApiResponse = (data: ImgurImageData): ImgurFile => {
   const ext = normalizeExtension(data.ext);
   return {
     ext,

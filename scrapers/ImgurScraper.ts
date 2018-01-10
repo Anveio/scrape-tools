@@ -4,12 +4,13 @@ import {
   downloadFile
 } from '../utils/requests';
 import {
-  createFolderForImgurSubreddit,
   transformImgurApiResponse,
-  generateImgurSubredditDestination
+  generateImgurSubredditFilePath,
+  generateImgurSubredditFolderPath
 } from '../utils/imgur';
 import { formatImgurUrl } from '../utils/urls';
 import { logger } from '../utils/logger';
+import { createFolder } from '../utils/fs';
 
 export class ImgurScraper {
   public static downloadSubredditView = async (url: string) => {
@@ -31,9 +32,11 @@ export class ImgurScraper {
 
       logger.reportNumFilesToDownload(filesToDownload.length);
 
-      await createFolderForImgurSubreddit(filesToDownload[0].subreddit);
+      await createFolder(
+        generateImgurSubredditFolderPath(filesToDownload[0].subreddit)
+      );
       await downloadFilesInParallel(filesToDownload)(
-        downloadFile<ImgurFile>(generateImgurSubredditDestination)
+        downloadFile<ImgurFile>(generateImgurSubredditFilePath)
       );
     } catch (e) {
       console.error(e);
