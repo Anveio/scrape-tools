@@ -6,7 +6,6 @@ import {
   loadHtmlString
 } from './cheerio';
 import { BASE_PICTURE_DIRECTORY } from '../constants';
-import { extractFileNameFromUrl } from './urls';
 
 export const selectImgurSubredditThumbnails = (input: CheerioStatic) =>
   Array.from(input('a.image-list-link'));
@@ -23,7 +22,7 @@ export const extractAlbumUrls = (data: string): string[] => {
 const generateImgurSubredditFolder = (subreddit: string) =>
   path.join(BASE_PICTURE_DIRECTORY, 'imgur', subreddit);
 
-export const generateImgurSubredditDestination = (file: ImgurFileData) =>
+export const generateImgurSubredditDestination = (file: ImgurFile) =>
   path.join(generateImgurSubredditFolder(file.subreddit), file.filename);
 
 export const createFolderForImgurSubreddit = async (subreddit: string) => {
@@ -32,7 +31,7 @@ export const createFolderForImgurSubreddit = async (subreddit: string) => {
 
 export const transformImgurApiResponse = (
   data: ImgurImageData
-): ImgurFileData => {
+): ImgurFile => {
   const ext = normalizeExtension(data.ext);
   return {
     ext,

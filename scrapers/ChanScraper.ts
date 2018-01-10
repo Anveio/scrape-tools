@@ -1,14 +1,16 @@
 import {
   getThreadData,
-  fileSrcToChanData,
+  fileInThreadToChanData,
   getChanThreadFileUrls,
-  formatChanUrl
+  formatChanUrl,
+  generateFolderForThread,
+  generateChanFileDestination
 } from '../utils/chan';
 import {
-  createFolderForThread,
+  createFolder,
   downloadFilesInParallel,
   requestUrl,
-  downloadChanFile
+  downloadFile
 } from '../utils/requests';
 import { loadHtmlString } from '../utils/cheerio';
 import { logger } from '../utils/logger';
@@ -16,7 +18,7 @@ import { logger } from '../utils/logger';
 export class ChanScraper {
   private static MIME_TYPE_WHITELIST = /webm/;
 
-  private static keepWhitelistedFiles = (file: ChanFileData) =>
+  private static keepWhitelistedFiles = (file: ChanFile) =>
     ChanScraper.MIME_TYPE_WHITELIST.test(file.src);
 
   public static downloadThread = async (url: string) => {
@@ -30,13 +32,15 @@ export class ChanScraper {
       logger.reportTotalFiles(unfilteredFiles.length);
 
       const filesToDownload = unfilteredFiles
-        .map(fileSrcToChanData(threadData))
+        .map(fileInThreadToChanData(threadData))
         .filter(ChanScraper.keepWhitelistedFiles);
       logger.reportNumFilesToDownload(filesToDownload.length);
 
-      await createFolderForThread(threadData);
-      await downloadFilesInParallel<ChanFileData>(filesToDownload)(
-        downloadChanFile
+      await createFolder(
+        generateFolderForThread(threadData.board, threadData.thread)
+      );
+      await downloadFilesInParallel<ChanFile>(filesToDownload)(
+        downloadFile<ChanFile>(generateChanFileDestination)
       );
     } catch (e) {
       console.error(e);

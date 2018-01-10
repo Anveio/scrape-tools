@@ -8,12 +8,14 @@ import {
 } from './cheerio';
 import { extractFileNameFromUrl } from './urls';
 
-export const generateChanFileDestination = (
-  info: ChanFileDestination
-): string => path.join(generateFolderForThread(info), info.filename);
+export const generateChanFileDestination = (file: ChanFile): string =>
+  path.join(generateFolderForThread(file.board, file.thread), file.filename);
 
-export const generateFolderForThread = (info: ChanThreadMetaData): string => {
-  return path.join(BASE_PICTURE_DIRECTORY, '4chan', info.board, info.thread);
+export const generateFolderForThread = (
+  board: string,
+  thread: string
+): string => {
+  return path.join(BASE_PICTURE_DIRECTORY, '4chan', board, thread);
 };
 
 export const getThreadData = ($: CheerioStatic): ChanThreadMetaData => {
@@ -27,15 +29,13 @@ export const getThreadData = ($: CheerioStatic): ChanThreadMetaData => {
   };
 };
 
-export const fileSrcToChanData = (threadData: ChanThreadMetaData) => (
+export const fileInThreadToChanData = (threadData: ChanThreadMetaData) => (
   src: string
-): ChanFileData => ({
+): ChanFile => ({
   src,
-  metadata: {
-    board: threadData.board,
-    thread: threadData.thread,
-    filename: extractFileNameFromUrl(src)
-  }
+  board: threadData.board,
+  thread: threadData.thread,
+  filename: extractFileNameFromUrl(src)
 });
 
 export const getChanThreadFileUrls = ($: CheerioStatic) =>

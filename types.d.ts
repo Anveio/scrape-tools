@@ -1,9 +1,9 @@
-interface ChanFileData {
+interface DownloadableFile {
   readonly src: string;
-  readonly metadata: ChanFileDestination;
 }
 
-interface ChanFileDestination extends ChanThreadMetaData {
+interface ChanFile extends ChanThreadMetaData {
+  readonly src: string;
   readonly filename: string;
 }
 
@@ -12,7 +12,7 @@ interface ChanThreadMetaData {
   readonly thread: string;
 }
 
-interface ImgurFileData {
+interface ImgurFile {
   readonly src: string;
   readonly hash: string;
   readonly ext: string;

@@ -1,11 +1,12 @@
 import {
   requestUrl,
   downloadFilesInParallel,
-  downloadImgurFile
+  downloadFile
 } from '../utils/requests';
 import {
   createFolderForImgurSubreddit,
-  transformImgurApiResponse
+  transformImgurApiResponse,
+  generateImgurSubredditDestination
 } from '../utils/imgur';
 import { formatImgurUrl } from '../utils/urls';
 
@@ -28,7 +29,9 @@ export class ImgurScraper {
       console.info(`Downloading ${filesToDownload.length} images.`);
 
       await createFolderForImgurSubreddit(filesToDownload[0].subreddit);
-      await downloadFilesInParallel(filesToDownload)(downloadImgurFile);
+      await downloadFilesInParallel(filesToDownload)(
+        downloadFile<ImgurFile>(generateImgurSubredditDestination)
+      );
     } catch (e) {
       console.error(e);
     }
