@@ -22,17 +22,22 @@ export const downloadFile = <T extends DownloadableFile>(
 ) => async (file: T) => {
   try {
     const writeStream = await fs.createWriteStream(generateDestination(file));
-    https.get(file.src, res => {
+    const downloadRequest = https.get(file.src, res => {
       res.pipe(writeStream);
+    });
+
+    downloadRequest.on('finish', () => {
       process.stdout.write('.');
     });
+
+    downloadRequest.on('error', console.error);
   } catch (e) {
     console.error(`Failed to download file: ${file.src}`);
   }
 };
 
 export const downloadFilesInParallel = <T>(files: T[]) => (
-  downloadFn: (value: T) => void
+  downloadFn: (value: T) => Promise<void>
 ) => Promise.all(files.map(downloadFn));
 
 export const selectData = <T>(response: AxiosResponse<T>) => response.data;
