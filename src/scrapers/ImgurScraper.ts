@@ -17,9 +17,6 @@ export class ImgurScraper {
     log.urlToDownload(formatImgurUrl(url));
     try {
       const response = await requestUrl<ImgurApiResponse>(formatImgurUrl(url));
-
-      log.totalFilesFound(response.data.data.length);
-
       const filesToDownload = response.data.data
         .map(transformImgurApiResponse)
         .filter(file => file.size > 0);

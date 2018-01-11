@@ -12,9 +12,19 @@ export const assignScraperToArgument = async (arg: string) => {
     } else if (validate4ChanThread(arg)) {
       return await ChanScraper.downloadThread(arg);
     } else {
-      throw Error('Could not find a scraper to handle that URL.');
+      throw Error(`Could not find a scraper to handle "${arg}".`);
     }
   } catch (e) {
-    console.error(e);
+    throw e;
   }
 };
+
+process.on('message', async (msg: string) => {
+  try {
+    await assignScraperToArgument(msg);
+    process.exit();
+  } catch (e) {
+    console.log(e.message);
+    process.exit();
+  }
+});
