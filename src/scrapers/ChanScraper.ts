@@ -24,8 +24,6 @@ export class ChanScraper {
       const threadData = getThreadData(parsedHtmlString);
 
       const unfilteredFiles = getChanThreadFileUrls(parsedHtmlString);
-      log.totalFilesFound(unfilteredFiles.length);
-
       const filesToDownload = filterFiles(unfilteredFiles)(threadData);
       if (filesToDownload.length === 0) {
         log.noFilesToDownload();
