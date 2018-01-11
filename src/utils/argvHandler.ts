@@ -16,6 +16,5 @@ export const assignScraperToArgument = async (arg: string) => {
     }
   } catch (e) {
     console.error(e);
-    process.exit(1);
   }
 };
