@@ -5,8 +5,8 @@
   "author": "Shovon Hasan <im.shovonhasan@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "ts-node ./index.ts",
-    "download": "ts-node ./index.ts"
+    "start": "ts-node ./src/index.ts",
+    "download": "ts-node ./src/index.ts"
   },
   "devDependencies": {
     "@types/cheerio": "^0.22.7",

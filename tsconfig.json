@@ -10,7 +10,7 @@
     "sourceMap": true,
     "allowJs": true,
     "moduleResolution": "node",
-    "rootDir": "./",
+    "rootDir": "./src",
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
