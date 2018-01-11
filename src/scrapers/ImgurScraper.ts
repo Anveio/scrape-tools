@@ -14,10 +14,9 @@ import { createFolder } from '../utils/fs';
 
 export class ImgurScraper {
   public static downloadSubredditView = async (url: string) => {
+    log.urlToDownload(formatImgurUrl(url));
     try {
-      const response = await requestUrl<ImgurApiResponse>(formatImgurUrl(url), {
-        responseType: 'json'
-      });
+      const response = await requestUrl<ImgurApiResponse>(formatImgurUrl(url));
 
       log.totalFilesFound(response.data.data.length);
 
@@ -30,11 +29,14 @@ export class ImgurScraper {
         return;
       }
 
-      log.numFilesToDownload(filesToDownload.length);
-
-      await createFolder(
-        generateImgurSubredditFolderPath(filesToDownload[0].subreddit)
+      const folderPath = generateImgurSubredditFolderPath(
+        filesToDownload[0].subreddit
       );
+
+      log.numFilesToDownload(filesToDownload.length, folderPath);
+
+      await createFolder(folderPath);
+
       await requestFilesInParallel(filesToDownload)(
         downloadFile<ImgurFile>(generateImgurSubredditFilePath)
       );

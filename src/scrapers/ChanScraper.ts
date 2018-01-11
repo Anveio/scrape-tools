@@ -17,7 +17,7 @@ import { createFolder } from '../utils/fs';
 
 export class ChanScraper {
   public static downloadThread = async (url: string) => {
-    log.urlToDownload(url);
+    log.urlToDownload(formatChanUrl(url));
     try {
       const { data } = await requestUrl<string>(formatChanUrl(url));
       const parsedHtmlString = loadHtmlString(data);
@@ -32,11 +32,14 @@ export class ChanScraper {
         return;
       }
 
-      log.numFilesToDownload(filesToDownload.length);
-
-      await createFolder(
-        generateFolderForThread(threadData.board, threadData.thread)
+      const folderPath = generateFolderForThread(
+        threadData.board,
+        threadData.thread
       );
+
+      log.numFilesToDownload(filesToDownload.length, folderPath);
+
+      await createFolder(folderPath);
       await requestFilesInParallel<ChanFile>(filesToDownload)(
         downloadFile<ChanFile>(generateChanFileDestination)
       );
