@@ -1,14 +1,12 @@
 import * as path from 'path';
 
-import { BASE_PICTURE_DIRECTORY } from '../constants';
+import { BASE_PICTURE_DIRECTORY, CHAN_MIME_TYPE_WHITELIST } from '../constants';
 import {
   prependSecureSchemeToUrl,
   getHrefAttribute,
   filterInvalidString
 } from './cheerio';
 import { extractFileNameFromUrl } from './urls';
-
-const MIME_TYPE_WHITELIST = /webm/;
 
 export const generateChanFileDestination = (file: ChanFile): string =>
   path.join(generateFolderForThread(file.board, file.thread), file.filename);
@@ -58,7 +56,7 @@ export const filterFiles = (unfilteredFiles: string[]) => (
     .filter(keepWhitelistedFiles);
 
 const keepWhitelistedFiles = (file: ChanFile) =>
-  MIME_TYPE_WHITELIST.test(file.src);
+  CHAN_MIME_TYPE_WHITELIST.test(file.src);
 
 const formatBoardName = (unformattedBoardName: string): string =>
   unformattedBoardName.split(' - ')[0].replace(/\//g, '');

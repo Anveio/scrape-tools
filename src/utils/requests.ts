@@ -14,9 +14,6 @@ export const requestUrl = async <T>(
   }
 };
 
-export const requestUrlsInParallel = (urls: string[]) =>
-  Promise.all(urls.map(url => axios.get<string>(url)));
-
 export const downloadFile = <T extends DownloadableFile>(
   generateDestination: (file: T) => string
 ) => async (file: T) => {
@@ -36,8 +33,6 @@ export const downloadFile = <T extends DownloadableFile>(
   }
 };
 
-export const downloadFilesInParallel = <T>(files: T[]) => (
+export const requestFilesInParallel = <T>(files: T[]) => (
   downloadFn: (value: T) => Promise<void>
 ) => Promise.all(files.map(downloadFn));
-
-export const selectData = <T>(response: AxiosResponse<T>) => response.data;

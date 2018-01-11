@@ -7,7 +7,7 @@ import {
   filterFiles
 } from '../utils/chan';
 import {
-  downloadFilesInParallel,
+  requestFilesInParallel,
   requestUrl,
   downloadFile
 } from '../utils/requests';
@@ -37,7 +37,7 @@ export class ChanScraper {
       await createFolder(
         generateFolderForThread(threadData.board, threadData.thread)
       );
-      await downloadFilesInParallel<ChanFile>(filesToDownload)(
+      await requestFilesInParallel<ChanFile>(filesToDownload)(
         downloadFile<ChanFile>(generateChanFileDestination)
       );
     } catch (e) {

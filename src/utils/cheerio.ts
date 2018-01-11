@@ -2,7 +2,7 @@ import { load } from 'cheerio';
 
 export const prependSecureSchemeToUrl = (url: string) => {
   if (url.startsWith('http')) {
-    return url;
+    return url.replace(/http/, 'https');
   } else if (url.startsWith('//')) {
     return 'https:' + url;
   } else {

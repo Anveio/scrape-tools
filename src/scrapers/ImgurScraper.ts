@@ -1,6 +1,6 @@
 import {
   requestUrl,
-  downloadFilesInParallel,
+  requestFilesInParallel,
   downloadFile
 } from '../utils/requests';
 import {
@@ -35,7 +35,7 @@ export class ImgurScraper {
       await createFolder(
         generateImgurSubredditFolderPath(filesToDownload[0].subreddit)
       );
-      await downloadFilesInParallel(filesToDownload)(
+      await requestFilesInParallel(filesToDownload)(
         downloadFile<ImgurFile>(generateImgurSubredditFilePath)
       );
     } catch (e) {

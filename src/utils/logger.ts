@@ -1,4 +1,6 @@
 export const logger = {
+  scraper: (scraper: string) =>
+    console.info(`URL interpreted as ${scraper}`),
   reportUrlToDownload: (url: string) => console.info(`Fetching ${url}`),
   reportTotalFiles: (numFiles: number) =>
     console.info(`Found ${numFiles} files total.`),
