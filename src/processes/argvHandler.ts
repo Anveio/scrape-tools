@@ -24,7 +24,7 @@ process.on('message', async (msg: string) => {
     await assignScraperToArgument(msg);
     process.exit();
   } catch (e) {
-    console.error(e.message);
+    console.log(e.message);
     process.exit();
   }
 });
