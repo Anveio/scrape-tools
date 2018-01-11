@@ -12,27 +12,27 @@ import {
   downloadFile
 } from '../utils/requests';
 import { loadHtmlString } from '../utils/cheerio';
-import { logger } from '../utils/logger';
+import { log } from '../utils/logger';
 import { createFolder } from '../utils/fs';
 
 export class ChanScraper {
   public static downloadThread = async (url: string) => {
-    logger.reportUrlToDownload(url);
+    log.urlToDownload(url);
     try {
       const { data } = await requestUrl<string>(formatChanUrl(url));
       const parsedHtmlString = loadHtmlString(data);
       const threadData = getThreadData(parsedHtmlString);
 
       const unfilteredFiles = getChanThreadFileUrls(parsedHtmlString);
-      logger.reportTotalFiles(unfilteredFiles.length);
+      log.totalFilesFound(unfilteredFiles.length);
 
       const filesToDownload = filterFiles(unfilteredFiles)(threadData);
       if (filesToDownload.length === 0) {
-        logger.reportNoFilesToDownload();
+        log.noFilesToDownload();
         return;
       }
 
-      logger.reportNumFilesToDownload(filesToDownload.length);
+      log.numFilesToDownload(filesToDownload.length);
 
       await createFolder(
         generateFolderForThread(threadData.board, threadData.thread)

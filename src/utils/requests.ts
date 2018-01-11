@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import * as https from 'https';
 import * as fs from 'fs-extra';
 
@@ -19,7 +19,7 @@ export const downloadFile = <T extends DownloadableFile>(
 ) => async (file: T) => {
   try {
     const writeStream = await fs.createWriteStream(generateDestination(file));
-    const downloadRequest = https.get(file.src, res => {
+    const downloadRequest = https.get(file.url, res => {
       res.pipe(writeStream);
     });
 
@@ -29,7 +29,7 @@ export const downloadFile = <T extends DownloadableFile>(
 
     downloadRequest.on('error', console.error);
   } catch (e) {
-    console.error(`Failed to download file: ${file.src}`);
+    console.error(`Failed to download file: ${file.url}`);
   }
 };
 

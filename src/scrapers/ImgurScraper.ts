@@ -9,7 +9,7 @@ import {
   generateImgurSubredditFolderPath
 } from '../utils/imgur';
 import { formatImgurUrl } from '../utils/urls';
-import { logger } from '../utils/logger';
+import { log } from '../utils/logger';
 import { createFolder } from '../utils/fs';
 
 export class ImgurScraper {
@@ -19,18 +19,18 @@ export class ImgurScraper {
         responseType: 'json'
       });
 
-      logger.reportTotalFiles(response.data.data.length);
+      log.totalFilesFound(response.data.data.length);
 
       const filesToDownload = response.data.data
         .map(transformImgurApiResponse)
         .filter(file => file.size > 0);
 
       if (filesToDownload.length === 0) {
-        logger.reportNoFilesToDownload();
+        log.noFilesToDownload();
         return;
       }
 
-      logger.reportNumFilesToDownload(filesToDownload.length);
+      log.numFilesToDownload(filesToDownload.length);
 
       await createFolder(
         generateImgurSubredditFolderPath(filesToDownload[0].subreddit)

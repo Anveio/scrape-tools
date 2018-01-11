@@ -1,10 +1,8 @@
-export const logger = {
-  scraper: (scraper: string) =>
-    console.info(`URL interpreted as ${scraper}`),
-  reportUrlToDownload: (url: string) => console.info(`Fetching ${url}`),
-  reportTotalFiles: (numFiles: number) =>
+export const log = {
+  urlToDownload: (url: string) => console.info(`Fetching ${url}`),
+  totalFilesFound: (numFiles: number) =>
     console.info(`Found ${numFiles} files total.`),
-  reportNumFilesToDownload: (numFiles: number) =>
+  numFilesToDownload: (numFiles: number) =>
     console.info(`Downloading ${numFiles} files.`),
-  reportNoFilesToDownload: () => console.log('Found no files to download.')
+  noFilesToDownload: () => console.info('Found no files to download.')
 };

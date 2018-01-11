@@ -30,7 +30,7 @@ export const transformImgurApiResponse = (data: ImgurImageData): ImgurFile => {
     ext,
     filename: `${data.hash}${ext}`,
     hash: data.hash,
-    src: `https://i.imgur.com/${data.hash}${ext}`,
+    url: `https://i.imgur.com/${data.hash}${ext}`,
     subreddit: data.subreddit,
     size: data.size
   };

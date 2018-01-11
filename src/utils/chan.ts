@@ -30,12 +30,12 @@ export const getThreadData = ($: CheerioStatic): ChanThreadData => {
 };
 
 export const fileInThreadToChanData = (threadData: ChanThreadData) => (
-  src: string
+  url: string
 ): ChanFile => ({
-  src,
+  url,
   board: threadData.board,
   thread: threadData.thread,
-  filename: extractFileNameFromUrl(src)
+  filename: extractFileNameFromUrl(url)
 });
 
 export const getChanThreadFileUrls = ($: CheerioStatic) =>
@@ -56,7 +56,7 @@ export const filterFiles = (unfilteredFiles: string[]) => (
     .filter(keepWhitelistedFiles);
 
 const keepWhitelistedFiles = (file: ChanFile) =>
-  CHAN_MIME_TYPE_WHITELIST.test(file.src);
+  CHAN_MIME_TYPE_WHITELIST.test(file.url);
 
 const formatBoardName = (unformattedBoardName: string): string =>
   unformattedBoardName.split(' - ')[0].replace(/\//g, '');
