@@ -21,16 +21,23 @@ export const downloadFile = <T extends DownloadableFile>(
       res.pipe(writeStream);
     });
 
-    downloadRequest.on('finish', () => {
-      process.stdout.write('.');
-    });
+    return new Promise((resolve, reject) => {
+      downloadRequest.on('finish', () => {
+        process.stdout.write('.');
+        resolve();
+      });
 
-    downloadRequest.on('error', console.error);
+      downloadRequest.on('error', e => {
+        console.error(e);
+        reject();
+      });
+    });
   } catch (e) {
     console.error(`Failed to download file: ${file.url}`);
+    return Promise.reject(e);
   }
 };
 
 export const requestFilesInParallel = <T>(files: T[]) => (
-  downloadFn: (value: T) => Promise<void>
+  downloadFn: (value: T) => Promise<{}>
 ) => Promise.all(files.map(downloadFn));
