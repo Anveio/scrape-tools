@@ -1,12 +1,14 @@
 import * as path from 'path';
 
-import { BASE_PICTURE_DIRECTORY, CHAN_MIME_TYPE_WHITELIST } from '../constants';
 import {
-  prependSecureSchemeToUrl,
-  getHrefAttribute,
-  filterInvalidString
-} from './cheerio';
-import { extractFileNameFromUrl } from './urls';
+  BASE_PICTURE_DIRECTORY,
+  CHAN_MIME_TYPE_WHITELIST,
+  CHARACTER_BLACKLIST
+} from '../constants';
+
+import { prependSecureSchemeToUrl } from './urls';
+
+const filenameEllipsis = /(\(...)\)/;
 
 export const generateChanFileDestination = (file: ChanFile): string =>
   path.join(generateFolderForThread(file.board, file.thread), file.filename);
@@ -29,37 +31,42 @@ export const getThreadData = ($: CheerioStatic): ChanThreadData => {
   };
 };
 
-export const fileInThreadToChanData = (threadData: ChanThreadData) => (
-  url: string
-): ChanFile => ({
-  url,
-  board: threadData.board,
-  thread: threadData.thread,
-  filename: extractFileNameFromUrl(url)
-});
-
-export const getChanThreadFileUrls = ($: CheerioStatic) =>
-  selectChanThreadImageHrefs($).map(prependSecureSchemeToUrl);
-
-const selectChanThreadImageHrefs = (input: CheerioStatic): string[] =>
-  Array.from(input('a.fileThumb'))
-    .map(getHrefAttribute)
-    .filter(filterInvalidString);
-
-export const formatChanUrl = (url: string) => url.replace(/(#.*)/g, '');
-
-export const filterFiles = (unfilteredFiles: string[]) => (
-  threadData: ChanThreadData
-) =>
-  unfilteredFiles
-    .map(fileInThreadToChanData(threadData))
+export const getChanFiles = (
+  $: CheerioStatic,
+  metadata: ChanThreadData
+): ChanFile[] =>
+  Array.from($('div.fileText > a '))
+    .map(createChanData(metadata))
+    .filter(filterInvalidUrl)
     .filter(keepWhitelistedFiles);
 
 const keepWhitelistedFiles = (file: ChanFile) =>
   CHAN_MIME_TYPE_WHITELIST.test(file.url);
 
 const formatBoardName = (unformattedBoardName: string): string =>
-  unformattedBoardName.split(' - ')[0].replace(/\//g, '');
+  unformattedBoardName.split(' - ')[0].replace(CHARACTER_BLACKLIST, '');
 
 const hrefToThreadTitle = (href: string): string =>
   href.split('/').slice(-1)[0];
+
+const createChanData = (metadata: ChanThreadData) => (
+  el: CheerioElement
+): ChanFile => ({
+  filename: getFileName(el) || el.attribs.href,
+  url: prependSecureSchemeToUrl(el.attribs.href),
+  board: metadata.board,
+  thread: metadata.thread
+});
+
+const filterInvalidUrl = (file: ChanFile) => file.url !== undefined;
+
+const getFileName = (el: CheerioElement) => {
+  const rawFileName = el.firstChild.data;
+  if (rawFileName && rawFileName.length > 0) {
+    return rawFileName
+      .replace(filenameEllipsis, '')
+      .replace(CHARACTER_BLACKLIST, '');
+  } else {
+    return null;
+  }
+};

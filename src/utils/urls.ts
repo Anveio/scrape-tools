@@ -10,3 +10,15 @@ export const formatImgurUrl = (url: string): string => {
     return path.join(url, 'new.json');
   }
 };
+
+export const prependSecureSchemeToUrl = (url: string) => {
+  if (url.startsWith('http')) {
+    return url.replace(/http/, 'https');
+  } else if (url.startsWith('//')) {
+    return 'https:' + url;
+  } else {
+    return 'https://' + url;
+  }
+};
+
+export const formatChanUrl = (url: string) => url.replace(/(#.*)/g, '');

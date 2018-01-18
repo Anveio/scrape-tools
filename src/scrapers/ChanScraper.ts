@@ -1,10 +1,8 @@
 import {
   getThreadData,
-  getChanThreadFileUrls,
-  formatChanUrl,
+  getChanFiles,
   generateFolderForThread,
-  generateChanFileDestination,
-  filterFiles
+  generateChanFileDestination
 } from '../utils/chan';
 import {
   requestFilesInParallel,
@@ -14,6 +12,7 @@ import {
 import { loadHtmlString } from '../utils/cheerio';
 import { log } from '../utils/logger';
 import { createFolder } from '../utils/fs';
+import { formatChanUrl } from '../utils/urls';
 
 export class ChanScraper {
   public static downloadThread = async (url: string) => {
@@ -23,8 +22,7 @@ export class ChanScraper {
       const parsedHtmlString = loadHtmlString(data);
       const threadData = getThreadData(parsedHtmlString);
 
-      const unfilteredFiles = getChanThreadFileUrls(parsedHtmlString);
-      const filesToDownload = filterFiles(unfilteredFiles)(threadData);
+      const filesToDownload = getChanFiles(parsedHtmlString, threadData);
       if (filesToDownload.length === 0) {
         log.noFilesToDownload();
         return;
@@ -42,7 +40,7 @@ export class ChanScraper {
         downloadFile<ChanFile>(generateChanFileDestination)
       );
     } catch (e) {
-      console.error(e.message);
+      console.error(e);
       return;
     }
   };
