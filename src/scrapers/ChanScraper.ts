@@ -38,11 +38,12 @@ export class ChanScraper {
       log.numFilesToDownload(filesToDownload.length, folderPath);
 
       await createFolder(folderPath);
-      await requestFilesInParallel<ChanFile>(filesToDownload)(
+      return await requestFilesInParallel<ChanFile>(filesToDownload)(
         downloadFile<ChanFile>(generateChanFileDestination)
       );
     } catch (e) {
-      console.error(e);
+      console.error(e.message);
+      return;
     }
   };
 }

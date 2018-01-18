@@ -17,24 +17,24 @@ export const downloadFile = <T extends DownloadableFile>(
 ) => async (file: T) => {
   try {
     const writeStream = await fs.createWriteStream(generateDestination(file));
-    const downloadRequest = https.get(file.url, res => {
-      res.pipe(writeStream);
-    });
-
     return new Promise((resolve, reject) => {
-      downloadRequest.on('finish', () => {
-        process.stdout.write('.');
-        resolve();
-      });
+      https.get(file.url, res => {
+        res.pipe(writeStream);
 
-      downloadRequest.on('error', e => {
-        console.error(e);
-        reject();
+        res.on('end', () => {
+          process.stdout.write('.');
+          resolve(file.url);
+        });
+
+        res.on('error', e => {
+          console.error(e);
+          reject(file.url);
+        });
       });
     });
   } catch (e) {
     console.error(`Failed to download file: ${file.url}`);
-    return Promise.reject(e);
+    throw e;
   }
 };
 
