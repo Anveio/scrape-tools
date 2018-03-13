@@ -1,13 +1,10 @@
 {
   "compilerOptions": {
-    "outDir": "build/dist",
+    "strict": true,
+    "outDir": "build",
     "module": "commonjs",
-    "target": "es5",
-    "lib": [
-      "es2017",
-      "dom"
-    ],
-    "sourceMap": true,
+    "target": "es6",
+    "lib": ["es2017"],
     "allowJs": true,
     "moduleResolution": "node",
     "rootDir": "./src",
@@ -17,8 +14,7 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": true,
-    "experimentalDecorators": true
+    "noUnusedLocals": true
   },
   "exclude": [
     "server",
@@ -31,7 +27,5 @@
     "jest",
     "src/setupTests.ts"
   ],
-  "types": [
-    "typePatches"
-  ]
+  "types": ["typePatches"]
 }

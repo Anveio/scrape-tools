@@ -1,9 +1,5 @@
 import * as path from 'path';
-import {
-  getHrefAttribute,
-  filterInvalidString,
-  loadHtmlString
-} from './cheerio';
+import { getHrefAttribute, loadHtmlString } from './cheerio';
 import { BASE_PICTURE_DIRECTORY } from '../constants';
 
 export const selectImgurSubredditThumbnails = (input: CheerioStatic) =>
@@ -12,10 +8,7 @@ export const selectImgurSubredditThumbnails = (input: CheerioStatic) =>
 export const extractAlbumUrls = (data: string): string[] => {
   const html = loadHtmlString(data);
   const albumUrls: CheerioElement[] = selectImgurSubredditThumbnails(html);
-  return albumUrls
-    .map(getHrefAttribute)
-    .filter(filterInvalidString)
-    .map(prependImgurHostname);
+  return albumUrls.map(getHrefAttribute).map(prependImgurHostname);
 };
 
 export const generateImgurSubredditFolderPath = (subreddit: string) =>
