@@ -12,11 +12,12 @@ export const requestUrl = async <T>(
     throw new Error(`Network Error: failed to fetch url: ${url}`);
   }
 };
+
 export const downloadFile = <T extends DownloadableFile>(
   generateDestination: (file: T) => string
 ) => async (file: T) => {
   try {
-    const writeStream = await fs.createWriteStream(generateDestination(file));
+    const writeStream = fs.createWriteStream(generateDestination(file));
     return new Promise((resolve, reject) => {
       https.get(file.url, res => {
         res.pipe(writeStream);
