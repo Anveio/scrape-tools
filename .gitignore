@@ -17,7 +17,6 @@ node_modules
 examples/
 
 cookie.js
-development_notes.txt
 
 package-lock.json
 
