@@ -1,14 +1,6 @@
 import * as path from 'path';
-
-import {
-  BASE_PICTURE_DIRECTORY,
-  CHAN_MIME_TYPE_WHITELIST,
-  CHARACTER_BLACKLIST
-} from '../constants';
-
-import { prependSecureSchemeToUrl } from './urls';
-
-const filenameEllipsis = /(\(...)\)/;
+import { BASE_PICTURE_DIRECTORY, CHAN_MIME_TYPE_WHITELIST } from '../constants';
+import { ChanPost, ChanPostWithFile } from '../chan-api';
 
 export const generateChanFileDestination = (file: ChanFile): string =>
   path.join(generateFolderForThread(file.board, file.thread), file.filename);
@@ -16,57 +8,61 @@ export const generateChanFileDestination = (file: ChanFile): string =>
 export const generateFolderForThread = (
   board: string,
   thread: string
-): string => {
-  return path.join(BASE_PICTURE_DIRECTORY, '4chan', board, thread);
+): string => path.join(BASE_PICTURE_DIRECTORY, '4chan', board, thread);
+
+export const getChanUrlsToDownload = (
+  posts: ChanPost[],
+  boardName: string,
+  threadName: string
+): ChanFile[] =>
+  (posts.filter(keepOnlyPostsWithFiles) as ChanPostWithFile[])
+    .filter(keepWhitelistedFiles)
+    .map(
+      (post): ChanFile => ({
+        board: boardName,
+        thread: threadName,
+        filename: post.filename + post.ext,
+        url: `https://is3.4chan.org/${boardName}/${post.tim}${post.ext}`
+      })
+    );
+
+const keepWhitelistedFiles = (file: ChanPostWithFile) =>
+  CHAN_MIME_TYPE_WHITELIST.test(file.ext);
+
+const keepOnlyPostsWithFiles = (post: ChanPost) => !!post.filename;
+
+export const parseUrl = (regexp: RegExp, errorMessage?: string) => (
+  url: string
+) => {
+  const parseResult = regexp.exec(url);
+  if (!parseResult || !parseResult[1]) {
+    throw new Error(
+      errorMessage ||
+        `Unable to obtain result from parsing URL: ${url} with RegExp: ${regexp}.`
+    );
+  }
+
+  return parseResult[1];
 };
 
-export const getThreadData = ($: CheerioStatic): ChanThreadData => {
-  var titleData = $('title').text();
+const parseBoardName = parseUrl(/4chan\.org\/(.*)\/thread/);
+const parseThreadId = parseUrl(/thread\/(.*)\//);
 
-  const href = $('link[rel=canonical]').attr('href');
+export const formatAsChanCdnUrl = (url: string) => {
+  const boardName = parseBoardName(url);
+  const threadId = parseThreadId(url);
 
   return {
-    board: formatBoardName(titleData),
-    thread: hrefToThreadTitle(href)
+    boardName,
+    threadId,
+    formattedUrl: `https://a.4cdn.org/${boardName}/thread/${threadId}.json`
   };
 };
 
-export const getChanFiles = (
-  $: CheerioStatic,
-  metadata: ChanThreadData
-): ChanFile[] =>
-  Array.from($('div.fileText > a '))
-    .map(createChanData(metadata))
-    .filter(filterInvalidUrl)
-    .filter(keepWhitelistedFiles);
-
-const keepWhitelistedFiles = (file: ChanFile) =>
-  CHAN_MIME_TYPE_WHITELIST.test(file.url);
-
-const formatBoardName = (unformattedBoardName: string): string =>
-  unformattedBoardName.split(' - ')[0].replace(CHARACTER_BLACKLIST, '');
-
-const hrefToThreadTitle = (href: string): string =>
-  href.split('/').slice(-1)[0];
-
-const createChanData = (metadata: ChanThreadData) => (
-  el: CheerioElement
-): ChanFile => ({
-  filename: getFileName(el) || el.attribs.href,
-  url: prependSecureSchemeToUrl(el.attribs.href),
-  board: metadata.board,
-  thread: metadata.thread
-});
-
-const filterInvalidUrl = (file: ChanFile) => file.url !== undefined;
-
-const getFileName = (el: CheerioElement) => {
-  const rawFileName = el.firstChild.data;
-  if (rawFileName && rawFileName.length > 0) {
-    return rawFileName
-      .replace(filenameEllipsis, '')
-      .replace(CHARACTER_BLACKLIST, '');
-  } else {
-    return null;
+export const getThreadTitle = (post: ChanPost) => {
+  if (!post.semantic_url) {
+    throw new Error('Unable to generate thread title.');
   }
+
+  return post.semantic_url;
 };

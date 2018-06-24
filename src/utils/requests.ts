@@ -15,7 +15,7 @@ export const requestUrl = async <T>(
 
 export const downloadFile = <T extends DownloadableFile>(
   generateDestination: (file: T) => string
-) => async (file: T) => {
+) => (file: T) => {
   try {
     const writeStream = fs.createWriteStream(generateDestination(file));
     return new Promise((resolve, reject) => {

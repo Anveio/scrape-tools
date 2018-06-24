@@ -2,14 +2,11 @@ interface DownloadableFile {
   readonly url: string;
 }
 
-interface ChanFile extends ChanThreadData {
-  readonly url: string;
-  readonly filename: string;
-}
-
-interface ChanThreadData {
+interface ChanFile {
   readonly board: string;
   readonly thread: string;
+  readonly url: string;
+  readonly filename: string;
 }
 
 interface ImgurFile {
