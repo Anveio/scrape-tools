@@ -17,14 +17,12 @@ export const getChanUrlsToDownload = (
 ): ChanFile[] =>
   (posts.filter(keepOnlyPostsWithFiles) as ChanPostWithFile[])
     .filter(keepWhitelistedFiles)
-    .map(
-      (post): ChanFile => ({
-        board: boardName,
-        thread: threadName,
-        filename: post.filename + post.ext,
-        url: `https://is3.4chan.org/${boardName}/${post.tim}${post.ext}`
-      })
-    );
+    .map((post): ChanFile => ({
+      board: boardName,
+      thread: threadName,
+      filename: post.filename + post.ext,
+      url: `https://is3.4chan.org/${boardName}/${post.tim}${post.ext}`
+    }));
 
 const keepWhitelistedFiles = (file: ChanPostWithFile) =>
   CHAN_MIME_TYPE_WHITELIST.test(file.ext);
@@ -48,9 +46,18 @@ export const parseUrl = (regexp: RegExp, errorMessage?: string) => (
 const parseBoardName = parseUrl(/4chan\.org\/(.*)\/thread/);
 const parseThreadId = parseUrl(/thread\/(.*)\//);
 
+const formatChanUrl = (url: string) => {
+  const urlStrippedOfFragment = url.replace(/(#.*)/g, '');
+
+  return urlStrippedOfFragment.charAt(urlStrippedOfFragment.length - 1) === '/'
+    ? urlStrippedOfFragment
+    : urlStrippedOfFragment.concat('/');
+};
+
 export const formatAsChanCdnUrl = (url: string) => {
-  const boardName = parseBoardName(url);
-  const threadId = parseThreadId(url);
+  const formattedUrl = formatChanUrl(url);
+  const boardName = parseBoardName(formattedUrl);
+  const threadId = parseThreadId(formattedUrl);
 
   return {
     boardName,
